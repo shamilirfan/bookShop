@@ -30,7 +30,7 @@ func getBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Write header
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 
 	// Encoding
 	json.NewEncoder(w).Encode(&bookList)
@@ -59,7 +59,7 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 		if id == value.ID {
 			book = value
 
-			w.WriteHeader(200)
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(&book)
 			return
 		}
@@ -88,7 +88,7 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write header
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusCreated)
 
 	// Write a new book's ID
 	newBook.ID = len(bookList) + 1
@@ -132,19 +132,48 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 		if id == value.ID {
 			updatedBook.ID = id
 			bookList[index] = updatedBook
-
-			// Write header
-			w.WriteHeader(200)
-
-			// Encode
-			json.NewEncoder(w).Encode("Successfully updated")
-			return
 		}
 	}
 
-	// Book not found
-	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode("Book Not Found!!!")
+	// Write header
+	w.WriteHeader(http.StatusOK)
+
+	// Encode and show update message
+	json.NewEncoder(w).Encode("Successfully updated")
+}
+
+func deleteBook(w http.ResponseWriter, r *http.Request) {
+	// Cors handling
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	// Path value
+	bookID := r.PathValue("id")
+	id, err := strconv.Atoi(bookID)
+
+	// Error handling
+	if err != nil {
+		http.Error(w, "Please give a valid id", http.StatusBadRequest)
+		return
+	}
+
+	// Store unmatched value
+	var tempList []Book
+
+	// Searching specific value
+	for _, value := range bookList {
+		if id != value.ID {
+			tempList = append(tempList, value)
+		}
+	}
+
+	bookList = tempList
+
+	// Write header
+	w.WriteHeader(http.StatusOK)
+
+	// Encode and show delete message
+	json.NewEncoder(w).Encode("Successfully deleted")
 }
 
 // Main function
@@ -157,6 +186,7 @@ func main() {
 	mux.Handle("GET /books/{id}", http.HandlerFunc(getBook))
 	mux.Handle("POST /books", http.HandlerFunc(createBook))
 	mux.Handle("PUT /books/{id}", http.HandlerFunc(updateBook))
+	mux.Handle("DELETE /books/{id}", http.HandlerFunc(deleteBook))
 
 	// Listening server
 	fmt.Println("Server is running at http://localhost" + PORT)
