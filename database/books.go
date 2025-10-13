@@ -30,9 +30,10 @@ func GetByID(bookID int) *Book {
 }
 
 // Create
-func Create(newBook Book) {
+func Create(newBook Book) Book {
 	newBook.ID = len(bookList) + 1       // Write a new book's ID
 	bookList = append(bookList, newBook) // Append new book in a book list
+	return newBook
 }
 
 // Update

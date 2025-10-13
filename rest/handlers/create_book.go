@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bookShop/database"
+	"bookShop/util"
 	"encoding/json"
 	"net/http"
 )
@@ -19,7 +20,6 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)   // Write header
-	database.Create(newBook)            // Call Create function
-	json.NewEncoder(w).Encode(&newBook) // Encode
+	createdBook := database.Create(newBook)           // Call Create function
+	util.SendData(w, createdBook, http.StatusCreated) // Encode
 }

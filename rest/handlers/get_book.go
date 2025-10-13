@@ -22,6 +22,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 
 	if book != nil {
 		util.SendData(w, book, http.StatusOK)
+		return
 	}
 
 	// Book not found

@@ -7,5 +7,5 @@ import (
 )
 
 func GetBooks(w http.ResponseWriter, r *http.Request) {
-	util.SendData(w, database.BookList, http.StatusOK)
+	util.SendData(w, database.BookList(), http.StatusOK)
 }
