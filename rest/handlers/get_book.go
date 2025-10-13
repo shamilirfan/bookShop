@@ -18,17 +18,10 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Store specific book
-	var book database.Book
+	book := database.GetByID(id) // Call GetByID function
 
-	// searching book
-	for _, value := range database.BookList {
-		if id == value.ID {
-			book = value
-
-			util.SendData(w, &book, http.StatusOK)
-			return
-		}
+	if book != nil {
+		util.SendData(w, book, http.StatusOK)
 	}
 
 	// Book not found

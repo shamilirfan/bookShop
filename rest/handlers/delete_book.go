@@ -18,17 +18,6 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Store unmatched value
-	var tempList []database.Book
-
-	// Searching specific value
-	for _, value := range database.BookList {
-		if id != value.ID {
-			tempList = append(tempList, value)
-		}
-	}
-
-	database.BookList = tempList
-
-	util.SendData(w, "Successfully deleted", http.StatusOK)
+	database.Delete(id)                                     // Call delete function
+	util.SendData(w, "Successfully deleted", http.StatusOK) // Call sendData function
 }

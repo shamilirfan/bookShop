@@ -31,13 +31,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Searching specific book
-	for index, value := range database.BookList {
-		if id == value.ID {
-			updatedBook.ID = id
-			database.BookList[index] = updatedBook
-		}
-	}
-
-	util.SendData(w, "Successfully updated", http.StatusOK)
+	updatedBook.ID = id                                     // Update id
+	database.Update(updatedBook)                            // Call update function
+	util.SendData(w, "Successfully updated", http.StatusOK) // Call sendData function
 }

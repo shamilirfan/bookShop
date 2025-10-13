@@ -19,15 +19,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Write header
-	w.WriteHeader(http.StatusCreated)
-
-	// Write a new book's ID
-	newBook.ID = len(database.BookList) + 1
-
-	// Append new book in a book list
-	database.BookList = append(database.BookList, newBook)
-
-	// Encode
-	json.NewEncoder(w).Encode(&newBook)
+	w.WriteHeader(http.StatusCreated)   // Write header
+	database.Create(newBook)            // Call Create function
+	json.NewEncoder(w).Encode(&newBook) // Encode
 }

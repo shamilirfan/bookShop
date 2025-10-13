@@ -11,7 +11,54 @@ type Book struct {
 }
 
 // Book list define
-var BookList []Book
+var bookList []Book
+
+// BookList function
+func BookList() []Book {
+	return bookList
+}
+
+// Get Book by id
+func GetByID(bookID int) *Book {
+	// searching book
+	for _, value := range bookList {
+		if bookID == value.ID {
+			return &value
+		}
+	}
+	return nil
+}
+
+// Create
+func Create(newBook Book) {
+	newBook.ID = len(bookList) + 1       // Write a new book's ID
+	bookList = append(bookList, newBook) // Append new book in a book list
+}
+
+// Update
+func Update(updatedBook Book) {
+	// Searching specific book
+	for index, value := range bookList {
+		if updatedBook.ID == value.ID {
+			bookList[index] = updatedBook
+		}
+	}
+}
+
+// Delete
+func Delete(bookID int) {
+	// Store unmatched value
+	var tempList []Book
+
+	// Searching specific value
+	for _, value := range bookList {
+		if bookID != value.ID {
+			tempList = append(tempList, value)
+		}
+	}
+
+	bookList = tempList
+}
 
 // Init function
 func init() {
@@ -60,5 +107,5 @@ func init() {
 	}
 
 	// Append book list in slice/list
-	BookList = append(BookList, books...)
+	bookList = append(bookList, books...)
 }
