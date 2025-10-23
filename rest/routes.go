@@ -9,13 +9,13 @@ import (
 func Routes(mux *http.ServeMux) {
 	// Create route/endpoint
 	mux.Handle("GET /books",
-		middlewares.Use(http.HandlerFunc(handlers.GetBooks)))
+		middlewares.Use(http.HandlerFunc(book.GetBooks)))
 	mux.Handle("GET /books/{id}",
-		middlewares.Use(http.HandlerFunc(handlers.GetBook)))
+		middlewares.Use(http.HandlerFunc(book.GetBook)))
 	mux.Handle("POST /books",
-		middlewares.Use(http.HandlerFunc(handlers.CreateBook)))
+		middlewares.Use(http.HandlerFunc(book.CreateBook)))
 	mux.Handle("PUT /books/{id}",
-		middlewares.Use(http.HandlerFunc(handlers.UpdateBook)))
+		middlewares.Use(http.HandlerFunc(book.UpdateBook)))
 	mux.Handle("DELETE /books/{id}",
-		middlewares.Use(http.HandlerFunc(handlers.DeleteBook)))
+		middlewares.Use(http.HandlerFunc(book.DeleteBook)))
 }
