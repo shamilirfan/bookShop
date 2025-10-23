@@ -14,8 +14,8 @@ func Server() {
 
 	// Call ChainMiddleware function and pass argument
 	middlewares.ChainMiddleware(
-		middlewares.Logger,
 		middlewares.CorsWithPreflight,
+		middlewares.Logger, // Start will from here
 	)
 
 	// Create router

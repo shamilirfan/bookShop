@@ -15,7 +15,7 @@ type Configaration struct {
 }
 
 // Configaration type variable define
-var config Configaration
+var config *Configaration
 
 // Configaration loading function
 func loadConfig() {
@@ -49,7 +49,7 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
-	config = Configaration{
+	config = &Configaration{
 		Version:     version,
 		ServiceName: serviceName,
 		HttpPort:    port,
@@ -57,7 +57,9 @@ func loadConfig() {
 }
 
 // Get loadConfig function
-func GetConfig() Configaration {
-	loadConfig()
+func GetConfig() *Configaration {
+	if config == nil {
+		loadConfig()
+	}
 	return config
 }

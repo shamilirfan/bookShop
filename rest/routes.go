@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"bookShop/rest/handlers"
+	"bookShop/rest/handlers/book"
 	"bookShop/rest/middlewares"
 	"net/http"
 )
