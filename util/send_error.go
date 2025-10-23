@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func SendData(w http.ResponseWriter, data interface{}, statusCode int) {
+func SendError(w http.ResponseWriter, data interface{}, statusCode int) {
 	// Write header
 	w.WriteHeader(statusCode)
 

@@ -16,7 +16,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Error handling
 	if decoder != nil {
-		http.Error(w, "Please give me a valid json", http.StatusBadRequest)
+		util.SendError(w, "Please give me a valid json", http.StatusBadRequest)
 		return
 	}
 

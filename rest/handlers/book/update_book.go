@@ -15,7 +15,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Error handling
 	if err != nil {
-		http.Error(w, "Please give me a valid id", http.StatusBadRequest)
+		util.SendError(w, "Please give me a valid id", http.StatusBadRequest)
 		return
 	}
 
