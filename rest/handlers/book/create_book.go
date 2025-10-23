@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func CreateBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	// Store new book
 	var newBook database.Book
 

@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func UpdateBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	// Path value
 	bookID := r.PathValue("id")
 	id, err := strconv.Atoi(bookID)

@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func DeleteBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	// Path value
 	bookID := r.PathValue("id")
 	id, err := strconv.Atoi(bookID)

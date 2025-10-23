@@ -6,6 +6,6 @@ import (
 	"net/http"
 )
 
-func GetBooks(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
 	util.SendData(w, database.BookList(), http.StatusOK)
 }

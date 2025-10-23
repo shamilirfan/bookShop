@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"bookShop/rest"
+	"bookShop/rest/handlers/book"
 )
 
 func Serve() {
-	rest.Server()
+	server := rest.NewServer(book.NewHandler())
+	server.Start()
 }

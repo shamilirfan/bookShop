@@ -2,13 +2,20 @@ package rest
 
 import (
 	"bookShop/config"
+	"bookShop/rest/handlers/book"
 	"bookShop/rest/middlewares"
 	"fmt"
 	"net/http"
 	"os"
 )
 
-func Server() {
+type Server struct{ bookHandler *book.Handler }
+
+func NewServer(bookHandler *book.Handler) *Server {
+	return &Server{bookHandler: bookHandler}
+}
+
+func (server *Server) Start() {
 	// Port
 	var port string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
 
@@ -22,7 +29,9 @@ func Server() {
 	mux := http.NewServeMux()
 
 	// Call routes function and pass mux as a argument
-	Routes(mux)
+	// Routes(mux)
+	// book.NewHandler().RregisterRoutes(mux)
+	server.bookHandler.RregisterRoutes(mux)
 
 	// Listening server
 	fmt.Println("Server is running at http://localhost" + port)
