@@ -26,7 +26,7 @@ func NewServer(
 
 func (server *Server) Start() {
 	// Port
-	var port string = ":" + fmt.Sprintf("%d", config.GetConfig().HttpPort)
+	var port string = ":" + fmt.Sprintf("%d",server.config.HttpPort)
 
 	// Call ChainMiddleware function and pass argument
 	middlewares.ChainMiddleware(
