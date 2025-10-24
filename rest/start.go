@@ -9,10 +9,19 @@ import (
 	"os"
 )
 
-type Server struct{ bookHandler *book.Handler }
+type Server struct {
+	config      *config.Configaration
+	bookHandler *book.Handler
+}
 
-func NewServer(bookHandler *book.Handler) *Server {
-	return &Server{bookHandler: bookHandler}
+func NewServer(
+	config *config.Configaration,
+	bookHandler *book.Handler,
+) *Server {
+	return &Server{
+		config:      config,
+		bookHandler: bookHandler,
+	}
 }
 
 func (server *Server) Start() {
