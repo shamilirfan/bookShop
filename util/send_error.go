@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func SendError(w http.ResponseWriter, data interface{}, statusCode int) {
-	// Write header
-	w.WriteHeader(statusCode)
-
-	// Encoding
-	encoder := json.NewEncoder(w) // w হচ্ছে কোথায় JSON ডেটা যাবে — সেটা বোঝায়।
-	encoder.Encode(&data)         // productList কে JSON format এ convert করে
+// SendError sends a JSON error response
+func SendError(w http.ResponseWriter, message interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode) // একবারই
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"error": message,
+	})
 }

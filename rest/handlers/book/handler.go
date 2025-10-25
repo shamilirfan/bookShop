@@ -7,7 +7,5 @@ type Handler struct {
 }
 
 func NewHandler(bookRepo repo.BookRepo) *Handler {
-	return &Handler{
-		bookRepo: bookRepo,
-	}
+	return &Handler{bookRepo: bookRepo}
 }

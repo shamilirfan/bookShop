@@ -15,7 +15,7 @@ type UpBook struct {
 	Price        float32 `json:"price"`
 	Description  string  `json:"description"`
 	ImageUrl     string  `json:"imageUrl"`
-	BookCatagory string  `json:"bookCatagory"`
+	BookCategory string  `json:"bookCatagory"`
 	IsStock      bool    `json:"isStock"`
 }
 
@@ -50,7 +50,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		Price:        updatedBook.Price,
 		Description:  updatedBook.Description,
 		ImageUrl:     updatedBook.ImageUrl,
-		BookCatagory: updatedBook.BookCatagory,
+		BookCategory: updatedBook.BookCategory,
 		IsStock:      updatedBook.IsStock,
 	}) // Call update function
 

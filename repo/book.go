@@ -1,136 +1,207 @@
 package repo
 
-// Struct define
+import (
+	"database/sql"
+	"log"
+
+	"github.com/jmoiron/sqlx"
+)
+
 type Book struct {
-	ID           int     `json:"id"` // It is called tag
-	Title        string  `json:"title"`
-	Author       string  `json:"author"`
-	Price        float32 `json:"price"`
-	Description  string  `json:"description"`
-	ImageUrl     string  `json:"imageUrl"`
-	BookCatagory string  `json:"bookCatagory"`
-	IsStock      bool    `json:"isStock"`
+	ID           int     `json:"id" db:"id"`
+	Title        string  `json:"title" db:"title"`
+	Author       string  `json:"author" db:"author"`
+	Price        float32 `json:"price" db:"price"`
+	Description  string  `json:"description" db:"description"`
+	ImageUrl     string  `json:"imageUrl" db:"image_url"`
+	BookCategory string  `json:"bookCategory" db:"book_category"`
+	IsStock      bool    `json:"isStock" db:"is_stock"`
 }
 
-// interface - It carries only function signature
+// BookRepo interface
 type BookRepo interface {
+	List() ([]*Book, error)
 	GetByID(bookID int) (*Book, error)
 	Create(newBook Book) (*Book, error)
 	Update(updatedBook Book) (*Book, error)
 	Delete(bookID int) error
-	List() ([]*Book, error)
 }
 
+// bookRepo implementation
 type bookRepo struct {
-	bookList []*Book
+	dbCon *sqlx.DB
 }
 
-func NewBookRepo() BookRepo {
-	repo := &bookRepo{}
-
-	generateInitialBook(repo)
-	return repo
+func NewBookRepo(dbCon *sqlx.DB) BookRepo {
+	return &bookRepo{dbCon: dbCon}
 }
 
+// List all books
+func (r *bookRepo) List() ([]*Book, error) {
+	var books []*Book
+	query := `
+		SELECT id, title, author, price, description, image_url, book_category, is_stock
+		FROM books
+	`
+
+	if err := r.dbCon.Select(&books, query); err != nil {
+		log.Printf("Error fetching books: %v", err)
+		return nil, err
+	}
+
+	return books, nil
+}
+
+// GetByID fetches a single book by ID
 func (r *bookRepo) GetByID(bookID int) (*Book, error) {
-	for _, value := range r.bookList {
-		if bookID == value.ID {
-			return value, nil
+	var book Book
+	query := `
+		SELECT id, title, author, price, description, image_url, book_category, is_stock
+		FROM books
+		WHERE id = $1
+	`
+
+	if err := r.dbCon.Get(&book, query, bookID); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		log.Printf("Error fetching book by ID %d: %v", bookID, err)
+		return nil, err
+	}
+
+	return &book, nil
+}
+
+// Create inserts a new book and returns it with the assigned ID
+func (r *bookRepo) Create(newBook Book) (*Book, error) {
+	query := `
+		INSERT INTO books (title, author, price, description, image_url, book_category, is_stock)
+		VALUES (:title, :author, :price, :description, :image_url, :book_category, :is_stock)
+		RETURNING id
+	`
+
+	rows, err := r.dbCon.NamedQuery(query, newBook)
+	if err != nil {
+		log.Printf("Error creating book: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		if err := rows.Scan(&newBook.ID); err != nil {
+			log.Printf("Error scanning new book ID: %v", err)
+			return nil, err
 		}
 	}
-	return nil, nil
-}
 
-func (r *bookRepo) Create(newBook Book) (*Book, error) {
-	newBook.ID = len(r.bookList) + 1          // Write a new book's ID
-	r.bookList = append(r.bookList, &newBook) // Append new book in a book list
 	return &newBook, nil
 }
 
+// Update modifies an existing book
 func (r *bookRepo) Update(updatedBook Book) (*Book, error) {
-	for index, value := range r.bookList {
-		if updatedBook.ID == value.ID {
-			r.bookList[index] = &updatedBook
-		}
+	query := `
+		UPDATE books
+		SET title=$1, author=$2, price=$3, description=$4, image_url=$5, book_category=$6, is_stock=$7
+		WHERE id=$8
+	`
+
+	result, err := r.dbCon.Exec(
+		query,
+		updatedBook.Title,
+		updatedBook.Author,
+		updatedBook.Price,
+		updatedBook.Description,
+		updatedBook.ImageUrl,
+		updatedBook.BookCategory,
+		updatedBook.IsStock,
+		updatedBook.ID,
+	)
+	if err != nil {
+		log.Printf("Error updating book ID %d: %v", updatedBook.ID, err)
+		return nil, err
 	}
-	return nil, nil
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	return &updatedBook, nil
 }
 
+// Delete removes a book by ID
 func (r *bookRepo) Delete(bookID int) error {
-	// Store unmatched value
-	var tempList []*Book
+	query := `DELETE FROM books WHERE id=$1`
 
-	// Searching specific value
-	for _, value := range r.bookList {
-		if bookID != value.ID {
-			tempList = append(tempList, value)
-		}
+	result, err := r.dbCon.Exec(query, bookID)
+	if err != nil {
+		log.Printf("Error deleting book ID %d: %v", bookID, err)
+		return err
 	}
 
-	r.bookList = tempList
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }
 
-func (r *bookRepo) List() ([]*Book, error) {
-	return r.bookList, nil
-}
+// func generateInitialBook(r *bookRepo) {
+// 	// List of books
+// 	books := []*Book{
+// 		{
+// 			ID:           1,
+// 			Title:        "The Promise of Heaven",
+// 			Author:       "Dr. David Jeremiah",
+// 			Price:        100,
+// 			Description:  "Description",
+// 			ImageUrl:     "https://m.media-amazon.com/images/I/71agofkFeiL._SY466_.jpg",
+// 			BookCategory: "History",
+// 			IsStock:      true,
+// 		},
+// 		{
+// 			ID:           2,
+// 			Title:        "How to Test Negative for Stupid",
+// 			Author:       "John Kennedy",
+// 			Price:        200,
+// 			Description:  "Description",
+// 			ImageUrl:     "https://m.media-amazon.com/images/I/71tbImx2YVL._SY466_.jpg",
+// 			BookCategory: "Chomic",
+// 			IsStock:      false,
+// 		},
+// 		{
+// 			ID:           3,
+// 			Title:        "The Biography Of John Neely Kennedy",
+// 			Author:       "Marcus Parker",
+// 			Price:        300,
+// 			Description:  "Description",
+// 			ImageUrl:     "https://m.media-amazon.com/images/I/61jC5-3L-XL._SY466_.jpg",
+// 			BookCategory: "Novel",
+// 			IsStock:      false,
+// 		},
+// 		{
+// 			ID:           4,
+// 			Title:        "Last Rites",
+// 			Author:       "Ozzy Osbourne",
+// 			Price:        400,
+// 			Description:  "Description",
+// 			ImageUrl:     "https://m.media-amazon.com/images/I/81L9X2TH++L._SY466_.jpg",
+// 			BookCategory: "Novel",
+// 			IsStock:      true,
+// 		},
+// 		{
+// 			ID:           5,
+// 			Title:        "One Nation Always Under God",
+// 			Author:       "Tim Scott",
+// 			Price:        500,
+// 			Description:  "Description",
+// 			ImageUrl:     "https://m.media-amazon.com/images/I/711h9Ts9CjL._SY466_.jpg",
+// 			BookCategory: "History",
+// 			IsStock:      true,
+// 		},
+// 	}
 
-func generateInitialBook(r *bookRepo) {
-	// List of books
-	books := []*Book{
-		{
-			ID:           1,
-			Title:        "The Promise of Heaven",
-			Author:       "Dr. David Jeremiah",
-			Price:        100,
-			Description:  "Description",
-			ImageUrl:     "https://m.media-amazon.com/images/I/71agofkFeiL._SY466_.jpg",
-			BookCatagory: "History",
-			IsStock:      true,
-		},
-		{
-			ID:           2,
-			Title:        "How to Test Negative for Stupid",
-			Author:       "John Kennedy",
-			Price:        200,
-			Description:  "Description",
-			ImageUrl:     "https://m.media-amazon.com/images/I/71tbImx2YVL._SY466_.jpg",
-			BookCatagory: "Chomic",
-			IsStock:      false,
-		},
-		{
-			ID:           3,
-			Title:        "The Biography Of John Neely Kennedy",
-			Author:       "Marcus Parker",
-			Price:        300,
-			Description:  "Description",
-			ImageUrl:     "https://m.media-amazon.com/images/I/61jC5-3L-XL._SY466_.jpg",
-			BookCatagory: "Novel",
-			IsStock:      false,
-		},
-		{
-			ID:           4,
-			Title:        "Last Rites",
-			Author:       "Ozzy Osbourne",
-			Price:        400,
-			Description:  "Description",
-			ImageUrl:     "https://m.media-amazon.com/images/I/81L9X2TH++L._SY466_.jpg",
-			BookCatagory: "Novel",
-			IsStock:      true,
-		},
-		{
-			ID:           5,
-			Title:        "One Nation Always Under God",
-			Author:       "Tim Scott",
-			Price:        500,
-			Description:  "Description",
-			ImageUrl:     "https://m.media-amazon.com/images/I/711h9Ts9CjL._SY466_.jpg",
-			BookCatagory: "History",
-			IsStock:      true,
-		},
-	}
-
-	// Append book list in slice/list
-	r.bookList = append(r.bookList, books...)
-}
+// 	// Append book list in slice/list
+// 	r.bookList = append(r.bookList, books...)
+// }

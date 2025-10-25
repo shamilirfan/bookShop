@@ -8,43 +8,41 @@ import (
 )
 
 // Struct define
-type CreateBook struct {
-	ID           int     `json:"id"` // It is called tag
-	Title        string  `json:"title"`
-	Author       string  `json:"author"`
-	Price        float32 `json:"price"`
-	Description  string  `json:"description"`
-	ImageUrl     string  `json:"imageUrl"`
-	BookCatagory string  `json:"bookCatagory"`
-	IsStock      bool    `json:"isStock"`
+type ReqCreateBook struct {
+	ID           int     `json:"id" db:"id"`
+	Title        string  `json:"title" db:"title"`
+	Author       string  `json:"author" db:"author"`
+	Price        float32 `json:"price" db:"price"`
+	Description  string  `json:"description" db:"description"`
+	ImageUrl     string  `json:"imageUrl" db:"imageUrl"`
+	BookCategory string  `json:"bookCategory" db:"bookCategory"`
+	IsStock      bool    `json:"isStock" db:"isStock"`
 }
 
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
-	// Store new book
-	var newBook CreateBook
+	var newBook ReqCreateBook
 
-	// Decode
-	decoder := json.NewDecoder(r.Body).Decode(&newBook)
-
-	// Error handling
-	if decoder != nil {
-		util.SendError(w, "Please give me a valid json", http.StatusBadRequest)
+	// Decode JSON request
+	if err := json.NewDecoder(r.Body).Decode(&newBook); err != nil {
+		util.SendError(w, "Please give me a valid JSON", http.StatusBadRequest)
 		return
 	}
 
+	// Create new book
 	createdBook, err := h.bookRepo.Create(repo.Book{
 		Title:        newBook.Title,
 		Author:       newBook.Author,
 		Price:        newBook.Price,
 		Description:  newBook.Description,
 		ImageUrl:     newBook.ImageUrl,
-		BookCatagory: newBook.BookCatagory,
+		BookCategory: newBook.BookCategory,
 		IsStock:      newBook.IsStock,
-	}) // Call Create function
+	})
 
 	if err != nil {
 		util.SendError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
-	util.SendData(w, createdBook, http.StatusCreated) // Encode
+	util.SendData(w, createdBook, http.StatusCreated)
 }
