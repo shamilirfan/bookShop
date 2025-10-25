@@ -14,9 +14,9 @@ type ReqCreateBook struct {
 	Author       string  `json:"author" db:"author"`
 	Price        float32 `json:"price" db:"price"`
 	Description  string  `json:"description" db:"description"`
-	ImageUrl     string  `json:"imageUrl" db:"imageUrl"`
-	BookCategory string  `json:"bookCategory" db:"bookCategory"`
-	IsStock      bool    `json:"isStock" db:"isStock"`
+	ImageUrl     string  `json:"imageUrl" db:"image_url"`
+	BookCategory string  `json:"bookCategory" db:"book_category"`
+	IsStock      bool    `json:"isStock" db:"is_stock"`
 }
 
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {

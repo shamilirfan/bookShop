@@ -44,7 +44,8 @@ func (r *bookRepo) List() ([]*Book, error) {
 		FROM books
 	`
 
-	if err := r.dbCon.Select(&books, query); err != nil {
+	err := r.dbCon.Select(&books, query)
+	if err != nil {
 		log.Printf("Error fetching books: %v", err)
 		return nil, err
 	}
@@ -61,7 +62,8 @@ func (r *bookRepo) GetByID(bookID int) (*Book, error) {
 		WHERE id = $1
 	`
 
-	if err := r.dbCon.Get(&book, query, bookID); err != nil {
+	err := r.dbCon.Get(&book, query, bookID)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -72,32 +74,33 @@ func (r *bookRepo) GetByID(bookID int) (*Book, error) {
 	return &book, nil
 }
 
-// Create inserts a new book and returns it with the assigned ID
 func (r *bookRepo) Create(newBook Book) (*Book, error) {
 	query := `
 		INSERT INTO books (title, author, price, description, image_url, book_category, is_stock)
-		VALUES (:title, :author, :price, :description, :image_url, :book_category, :is_stock)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
 	`
 
-	rows, err := r.dbCon.NamedQuery(query, newBook)
-	if err != nil {
-		log.Printf("Error creating book: %v", err)
-		return nil, err
-	}
-	defer rows.Close()
+	row := r.dbCon.QueryRow(
+		query,
+		newBook.Title,
+		newBook.Author,
+		newBook.Price,
+		newBook.Description,
+		newBook.ImageUrl,
+		newBook.BookCategory,
+		newBook.IsStock,
+	)
 
-	if rows.Next() {
-		if err := rows.Scan(&newBook.ID); err != nil {
-			log.Printf("Error scanning new book ID: %v", err)
-			return nil, err
-		}
+	err := row.Scan(&newBook.ID)
+	if err != nil {
+		log.Printf("Error scanning new book ID: %v", err)
+		return nil, err
 	}
 
 	return &newBook, nil
 }
 
-// Update modifies an existing book
 func (r *bookRepo) Update(updatedBook Book) (*Book, error) {
 	query := `
 		UPDATE books
@@ -116,6 +119,7 @@ func (r *bookRepo) Update(updatedBook Book) (*Book, error) {
 		updatedBook.IsStock,
 		updatedBook.ID,
 	)
+
 	if err != nil {
 		log.Printf("Error updating book ID %d: %v", updatedBook.ID, err)
 		return nil, err
@@ -146,62 +150,3 @@ func (r *bookRepo) Delete(bookID int) error {
 
 	return nil
 }
-
-// func generateInitialBook(r *bookRepo) {
-// 	// List of books
-// 	books := []*Book{
-// 		{
-// 			ID:           1,
-// 			Title:        "The Promise of Heaven",
-// 			Author:       "Dr. David Jeremiah",
-// 			Price:        100,
-// 			Description:  "Description",
-// 			ImageUrl:     "https://m.media-amazon.com/images/I/71agofkFeiL._SY466_.jpg",
-// 			BookCategory: "History",
-// 			IsStock:      true,
-// 		},
-// 		{
-// 			ID:           2,
-// 			Title:        "How to Test Negative for Stupid",
-// 			Author:       "John Kennedy",
-// 			Price:        200,
-// 			Description:  "Description",
-// 			ImageUrl:     "https://m.media-amazon.com/images/I/71tbImx2YVL._SY466_.jpg",
-// 			BookCategory: "Chomic",
-// 			IsStock:      false,
-// 		},
-// 		{
-// 			ID:           3,
-// 			Title:        "The Biography Of John Neely Kennedy",
-// 			Author:       "Marcus Parker",
-// 			Price:        300,
-// 			Description:  "Description",
-// 			ImageUrl:     "https://m.media-amazon.com/images/I/61jC5-3L-XL._SY466_.jpg",
-// 			BookCategory: "Novel",
-// 			IsStock:      false,
-// 		},
-// 		{
-// 			ID:           4,
-// 			Title:        "Last Rites",
-// 			Author:       "Ozzy Osbourne",
-// 			Price:        400,
-// 			Description:  "Description",
-// 			ImageUrl:     "https://m.media-amazon.com/images/I/81L9X2TH++L._SY466_.jpg",
-// 			BookCategory: "Novel",
-// 			IsStock:      true,
-// 		},
-// 		{
-// 			ID:           5,
-// 			Title:        "One Nation Always Under God",
-// 			Author:       "Tim Scott",
-// 			Price:        500,
-// 			Description:  "Description",
-// 			ImageUrl:     "https://m.media-amazon.com/images/I/711h9Ts9CjL._SY466_.jpg",
-// 			BookCategory: "History",
-// 			IsStock:      true,
-// 		},
-// 	}
-
-// 	// Append book list in slice/list
-// 	r.bookList = append(r.bookList, books...)
-// }
