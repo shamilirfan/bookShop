@@ -1,11 +1,11 @@
 package book
 
-import "bookShop/repo"
+import "bookShop/repo/book"
 
 type Handler struct {
-	bookRepo repo.BookRepo
+	bookRepo book.BookRepo
 }
 
-func NewHandler(bookRepo repo.BookRepo) *Handler {
+func NewHandler(bookRepo book.BookRepo) *Handler {
 	return &Handler{bookRepo: bookRepo}
 }

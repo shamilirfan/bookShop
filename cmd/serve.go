@@ -3,9 +3,9 @@ package cmd
 import (
 	"bookShop/config"
 	"bookShop/infrastructure/db"
-	"bookShop/repo"
+	"bookShop/repo/book"
 	"bookShop/rest"
-	"bookShop/rest/handlers/book"
+	bookHandler "bookShop/rest/handlers/book"
 	"fmt"
 	"os"
 )
@@ -18,8 +18,8 @@ func Serve() {
 		os.Exit(1)
 	}
 
-	bookRepo := repo.NewBookRepo(dbConfigaretion)
-	server := rest.NewServer(config, book.NewHandler(bookRepo))
+	bookRepo := book.NewBookRepo(dbConfigaretion)
+	server := rest.NewServer(config, bookHandler.NewHandler(bookRepo))
 
 	server.Start()
 }

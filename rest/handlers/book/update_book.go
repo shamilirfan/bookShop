@@ -1,7 +1,7 @@
 package book
 
 import (
-	"bookShop/repo"
+	"bookShop/repo/book"
 	"bookShop/util"
 	"encoding/json"
 	"net/http"
@@ -9,14 +9,14 @@ import (
 )
 
 type UpBook struct {
-	ID           int     `json:"id"` // It is called tag
-	Title        string  `json:"title"`
-	Author       string  `json:"author"`
-	Price        float32 `json:"price"`
-	Description  string  `json:"description"`
-	ImageUrl     string  `json:"imageUrl"`
-	BookCategory string  `json:"bookCatagory"`
-	IsStock      bool    `json:"isStock"`
+	ID           int     `json:"id" db:"id"` // It is called tag
+	Title        string  `json:"title" db:"title"`
+	Author       string  `json:"author" db:"author"`
+	Price        float32 `json:"price" db:"price"`
+	Description  string  `json:"description" db:"description"`
+	ImageUrl     string  `json:"image_url" db:"image_url"`
+	BookCategory string  `json:"book_catagory" db:"book_catagory"`
+	IsStock      bool    `json:"is_stock" db:"is_stock"`
 }
 
 func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	updatedBook.ID = id // Update id
-	h.bookRepo.Update(repo.Book{
+	h.bookRepo.Update(book.Book{
 		ID:           id,
 		Title:        updatedBook.Title,
 		Author:       updatedBook.Author,

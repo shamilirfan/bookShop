@@ -1,7 +1,7 @@
 package book
 
 import (
-	"bookShop/repo"
+	"bookShop/repo/book"
 	"bookShop/util"
 	"encoding/json"
 	"net/http"
@@ -14,9 +14,9 @@ type ReqCreateBook struct {
 	Author       string  `json:"author" db:"author"`
 	Price        float32 `json:"price" db:"price"`
 	Description  string  `json:"description" db:"description"`
-	ImageUrl     string  `json:"imageUrl" db:"image_url"`
-	BookCategory string  `json:"bookCategory" db:"book_category"`
-	IsStock      bool    `json:"isStock" db:"is_stock"`
+	ImageUrl     string  `json:"image_url" db:"image_url"`
+	BookCategory string  `json:"book_category" db:"book_category"`
+	IsStock      bool    `json:"is_stock" db:"is_stock"`
 }
 
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create new book
-	createdBook, err := h.bookRepo.Create(repo.Book{
+	createdBook, err := h.bookRepo.Create(book.Book{
 		Title:        newBook.Title,
 		Author:       newBook.Author,
 		Price:        newBook.Price,
