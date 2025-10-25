@@ -1,7 +1,6 @@
 package book
 
 import (
-	"bookShop/database"
 	"bookShop/util"
 	"net/http"
 	"strconv"
@@ -18,7 +17,12 @@ func (h *Handler) GetBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book := database.GetByID(id) // Call GetByID function
+	book, err := h.bookRepo.GetByID(id) // Call GetByID function
+
+	if err != nil {
+		util.SendError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	if book != nil {
 		util.SendData(w, book, http.StatusOK)

@@ -1,7 +1,6 @@
 package book
 
 import (
-	"bookShop/database"
 	"bookShop/util"
 	"net/http"
 	"strconv"
@@ -18,6 +17,6 @@ func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	database.Delete(id)                                     // Call delete function
+	h.bookRepo.Delete(id)                                   // Call delete function
 	util.SendData(w, "Successfully deleted", http.StatusOK) // Call sendData function
 }

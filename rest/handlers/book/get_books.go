@@ -1,11 +1,16 @@
 package book
 
 import (
-	"bookShop/database"
 	"bookShop/util"
 	"net/http"
 )
 
 func (h *Handler) GetBooks(w http.ResponseWriter, r *http.Request) {
-	util.SendData(w, database.BookList(), http.StatusOK)
+	bookList, err := h.bookRepo.List()
+
+	if err != nil {
+		util.SendError(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+
+	util.SendData(w, bookList, http.StatusOK)
 }

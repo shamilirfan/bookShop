@@ -38,8 +38,7 @@ func (server *Server) Start() {
 	mux := http.NewServeMux()
 
 	// Call routes function and pass mux as a argument
-	// Routes(mux)
-	// book.NewHandler().RregisterRoutes(mux)
+	// book.NewHandler().RregisterRoutes(mux) // tight coupling
 	server.bookHandler.RregisterRoutes(mux)
 
 	// Listening server

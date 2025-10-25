@@ -1,7 +1,13 @@
 package book
 
-type Handler struct{}
+import "bookShop/repo"
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler struct {
+	bookRepo repo.BookRepo
+}
+
+func NewHandler(bookRepo repo.BookRepo) *Handler {
+	return &Handler{
+		bookRepo: bookRepo,
+	}
 }
