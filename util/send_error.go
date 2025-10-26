@@ -8,7 +8,7 @@ import (
 // SendError sends a JSON error response
 func SendError(w http.ResponseWriter, message interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode) // একবারই
+	w.WriteHeader(statusCode) 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"error": message,
 	})

@@ -3,6 +3,7 @@ package rest
 import (
 	"bookShop/config"
 	"bookShop/rest/handlers/book"
+	"bookShop/rest/handlers/users"
 	"bookShop/rest/middlewares"
 	"fmt"
 	"net/http"
@@ -10,23 +11,26 @@ import (
 )
 
 type Server struct {
-	config      *config.Configaration
-	bookHandler *book.Handler
+	config       *config.Configaration
+	bookHandler  *book.Handler
+	usersHandler *users.Handler
 }
 
 func NewServer(
 	config *config.Configaration,
 	bookHandler *book.Handler,
+	usersHandler *users.Handler,
 ) *Server {
 	return &Server{
-		config:      config,
-		bookHandler: bookHandler,
+		config:       config,
+		bookHandler:  bookHandler,
+		usersHandler: usersHandler,
 	}
 }
 
 func (server *Server) Start() {
 	// Port
-	var port string = ":" + fmt.Sprintf("%d",server.config.HttpPort)
+	var port string = ":" + fmt.Sprintf("%d", server.config.HttpPort)
 
 	// Call ChainMiddleware function and pass argument
 	middlewares.ChainMiddleware(
@@ -38,8 +42,8 @@ func (server *Server) Start() {
 	mux := http.NewServeMux()
 
 	// Call routes function and pass mux as a argument
-	// book.NewHandler().RregisterRoutes(mux) // tight coupling
 	server.bookHandler.RregisterRoutes(mux)
+	server.usersHandler.RegisterRoutes(mux)
 
 	// Listening server
 	fmt.Println("Server is running at http://localhost" + port)

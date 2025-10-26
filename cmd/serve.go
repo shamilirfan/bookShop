@@ -6,6 +6,7 @@ import (
 	"bookShop/repo/book"
 	"bookShop/rest"
 	bookHandler "bookShop/rest/handlers/book"
+	"bookShop/rest/handlers/users"
 	"fmt"
 	"os"
 )
@@ -19,7 +20,11 @@ func Serve() {
 	}
 
 	bookRepo := book.NewBookRepo(dbConfigaretion)
-	server := rest.NewServer(config, bookHandler.NewHandler(bookRepo))
+	server := rest.NewServer(
+		config,
+		bookHandler.NewHandler(bookRepo),
+		users.NewHandler(),
+	)
 
 	server.Start()
 }
