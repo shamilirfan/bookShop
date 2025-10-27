@@ -1,11 +1,13 @@
 package users
 
 import (
+	"bookShop/repo/users"
 	"bookShop/util"
 	"encoding/json"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 type Users struct {
@@ -15,12 +17,11 @@ type Users struct {
 	Password string `json:"password" db:"password" validate:"required"`
 }
 
-var users []Users
-
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
-	var user Users
+	var newUser Users
 
-	err1 := json.NewDecoder(r.Body).Decode(&user)
+	// Decode JSON request
+	err1 := json.NewDecoder(r.Body).Decode(&newUser)
 	if err1 != nil {
 		util.SendError(w, "Please give a valid JSON", http.StatusBadRequest)
 		return
@@ -28,22 +29,30 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// Validate input
 	validate := validator.New()
-	err2 := validate.Struct(user)
+	err2 := validate.Struct(newUser)
 	if err2 != nil {
 		util.SendError(w, err2.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
+	hashedPassword, err3 := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	if err3 != nil {
 		util.SendError(w, "Failed to hash password", http.StatusInternalServerError)
 		return
 	}
-	user.Password = string(hashedPassword)
+	newUser.Password = string(hashedPassword)
 
-	user.ID = len(users) + 1
-	users = append(users, user)
+	createdUser, err4 := h.users.CreateUser(users.Users{
+		UserName: newUser.UserName,
+		Email:    newUser.Email,
+		Password: newUser.Password,
+	})
 
-	util.SendData(w, user, http.StatusCreated)
+	if err4 != nil {
+		util.SendError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	util.SendData(w, createdUser, http.StatusCreated)
 }

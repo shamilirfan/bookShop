@@ -1,7 +1,9 @@
 package users
 
-type Handler struct{}
+import user "bookShop/repo/users"
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler struct{ users user.UsersRepo }
+
+func NewHandler(users user.UsersRepo) *Handler {
+	return &Handler{users: users}
 }
