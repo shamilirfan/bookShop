@@ -19,7 +19,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	usr, _ := h.users.FindUser(user.Email, user.Password)
 
 	if usr == nil {
-		util.SendError(w, "Invalid credentials", http.StatusBadRequest)
+		util.SendError(w, "User Not Found!!!", http.StatusBadRequest)
 		return
 	}
 
