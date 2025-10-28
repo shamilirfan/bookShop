@@ -13,12 +13,11 @@ type Users struct {
 
 type UsersRepo interface {
 	CreateUser(newUser Users) (*Users, error)
-	SignIn()
+	FindUser(email, password string) (*Users, error)
 }
 
 type usersRepo struct{ dbCon *sqlx.DB }
 
 func NewUsersRepo(dbCon *sqlx.DB) UsersRepo {
-	repo := &usersRepo{dbCon: dbCon}
-	return repo
+	return &usersRepo{dbCon: dbCon}
 }
