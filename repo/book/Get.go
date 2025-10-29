@@ -5,7 +5,7 @@ import "log"
 func (r *bookRepo) Get() ([]*Book, error) {
 	var books []*Book
 	query := `
-		SELECT id, title, author, price, description, image_url, book_category, is_stock
+		SELECT id, title, author, price, description, image_path, category, is_stock
 		FROM books
 	`
 

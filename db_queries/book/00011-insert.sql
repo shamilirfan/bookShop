@@ -4,8 +4,8 @@ INSERT INTO
         author,
         price,
         description,
-        image_url,
-        book_category,
+        image_path,
+        category,
         is_stock
     )
 VALUES

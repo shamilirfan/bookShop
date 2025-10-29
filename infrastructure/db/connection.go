@@ -16,9 +16,10 @@ func NewConnection() (*sqlx.DB, error) {
 	dbCon, err := sqlx.Connect("postgres", dbSource)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("❌ Database connection failed:", err)
 		return nil, err
 	}
 
+	fmt.Println("✅ Connected to Database successfully!")
 	return dbCon, nil
 }

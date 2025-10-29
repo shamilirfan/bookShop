@@ -6,7 +6,7 @@ import (
 
 func (r *bookRepo) Create(newBook Book) (*Book, error) {
 	query := `
-		INSERT INTO books (title, author, price, description, image_url, book_category, is_stock)
+		INSERT INTO books (title, author, price, description, image_path, category, is_stock)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
 	`
@@ -17,8 +17,8 @@ func (r *bookRepo) Create(newBook Book) (*Book, error) {
 		newBook.Author,
 		newBook.Price,
 		newBook.Description,
-		newBook.ImageUrl,
-		newBook.BookCategory,
+		newBook.ImagePath,
+		newBook.Category,
 		newBook.IsStock,
 	)
 

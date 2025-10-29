@@ -5,7 +5,7 @@ CREATE TABLE
         author VARCHAR(50) NOT NULL,
         price FLOAT NOT NULL,
         description TEXT NOT NULL,
-        image_url TEXT NOT NULL,
-        book_category VARCHAR(50) NOT NULL,
+        image_path TEXT NOT NULL,
+        category VARCHAR(50) NOT NULL,
         is_stock BOOLEAN NOT NULL
     );

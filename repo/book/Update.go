@@ -8,7 +8,7 @@ import (
 func (r *bookRepo) Update(updatedBook Book) (*Book, error) {
 	query := `
 		UPDATE books
-		SET title=$1, author=$2, price=$3, description=$4, image_url=$5, book_category=$6, is_stock=$7
+		SET title=$1, author=$2, price=$3, description=$4, image_path=$5, category=$6, is_stock=$7
 		WHERE id=$8
 	`
 
@@ -18,8 +18,8 @@ func (r *bookRepo) Update(updatedBook Book) (*Book, error) {
 		updatedBook.Author,
 		updatedBook.Price,
 		updatedBook.Description,
-		updatedBook.ImageUrl,
-		updatedBook.BookCategory,
+		updatedBook.ImagePath,
+		updatedBook.Category,
 		updatedBook.IsStock,
 		updatedBook.ID,
 	)

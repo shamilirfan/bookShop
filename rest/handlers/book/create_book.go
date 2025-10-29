@@ -9,14 +9,14 @@ import (
 
 // Struct define
 type ReqCreateBook struct {
-	ID           int     `json:"id" db:"id"`
-	Title        string  `json:"title" db:"title"`
-	Author       string  `json:"author" db:"author"`
-	Price        float32 `json:"price" db:"price"`
-	Description  string  `json:"description" db:"description"`
-	ImageUrl     string  `json:"image_url" db:"image_url"`
-	BookCategory string  `json:"book_category" db:"book_category"`
-	IsStock      bool    `json:"is_stock" db:"is_stock"`
+	ID          int     `json:"id" db:"id"`
+	Title       string  `json:"title" db:"title"`
+	Author      string  `json:"author" db:"author"`
+	Price       float32 `json:"price" db:"price"`
+	Description string  `json:"description" db:"description"`
+	ImagePath   string  `json:"image_path" db:"image_path"`
+	Category    string  `json:"category" db:"category"`
+	IsStock     bool    `json:"is_stock" db:"is_stock"`
 }
 
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +30,13 @@ func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	// Create new book
 	createdBook, err := h.bookRepo.Create(book.Book{
-		Title:        newBook.Title,
-		Author:       newBook.Author,
-		Price:        newBook.Price,
-		Description:  newBook.Description,
-		ImageUrl:     newBook.ImageUrl,
-		BookCategory: newBook.BookCategory,
-		IsStock:      newBook.IsStock,
+		Title:       newBook.Title,
+		Author:      newBook.Author,
+		Price:       newBook.Price,
+		Description: newBook.Description,
+		ImagePath:   newBook.ImagePath,
+		Category:    newBook.Category,
+		IsStock:     newBook.IsStock,
 	})
 
 	if err != nil {

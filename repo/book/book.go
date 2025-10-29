@@ -3,14 +3,14 @@ package book
 import "github.com/jmoiron/sqlx"
 
 type Book struct {
-	ID           int     `json:"id" db:"id"`
-	Title        string  `json:"title" db:"title"`
-	Author       string  `json:"author" db:"author"`
-	Price        float32 `json:"price" db:"price"`
-	Description  string  `json:"description" db:"description"`
-	ImageUrl     string  `json:"image_url" db:"image_url"`
-	BookCategory string  `json:"book_category" db:"book_category"`
-	IsStock      bool    `json:"is_stock" db:"is_stock"`
+	ID          int     `json:"id" db:"id"`
+	Title       string  `json:"title" db:"title"`
+	Author      string  `json:"author" db:"author"`
+	Price       float32 `json:"price" db:"price"`
+	Description string  `json:"description" db:"description"`
+	ImagePath   string  `json:"image_path" db:"image_path"`
+	Category    string  `json:"category" db:"category"`
+	IsStock     bool    `json:"is_stock" db:"is_stock"`
 }
 
 type BookRepo interface {
