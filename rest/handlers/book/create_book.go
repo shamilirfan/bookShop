@@ -3,8 +3,11 @@ package book
 import (
 	"bookShop/repo/book"
 	"bookShop/util"
-	"encoding/json"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
 )
 
 // Struct define
@@ -20,23 +23,37 @@ type ReqCreateBook struct {
 }
 
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
-	var newBook ReqCreateBook
+	r.ParseMultipartForm(10 << 20) // 10 MB max
+	title := r.FormValue("title")
+	author := r.FormValue("author")
+	priceStr := r.FormValue("price")
+	price, _ := strconv.ParseFloat(priceStr, 32)
+	description := r.FormValue("description")
+	category := r.FormValue("category")
+	is_stock := r.FormValue("is_stock")
+	stock, _ := strconv.ParseBool(is_stock)
+	file, handler, err := r.FormFile("image_path")
 
-	// Decode JSON request
-	if err := json.NewDecoder(r.Body).Decode(&newBook); err != nil {
-		util.SendError(w, "Please give me a valid JSON", http.StatusBadRequest)
-		return
+	var filePath string
+	if err == nil {
+		defer file.Close()
+		os.MkdirAll("uploads", os.ModePerm)
+		filePath = filepath.Join("uploads", handler.Filename)
+		filePath = filepath.ToSlash(filePath)
+		dst, _ := os.Create(filePath)
+		defer dst.Close()
+		io.Copy(dst, file)
 	}
 
 	// Create new book
 	createdBook, err := h.bookRepo.Create(book.Book{
-		Title:       newBook.Title,
-		Author:      newBook.Author,
-		Price:       newBook.Price,
-		Description: newBook.Description,
-		ImagePath:   newBook.ImagePath,
-		Category:    newBook.Category,
-		IsStock:     newBook.IsStock,
+		Title:       title,
+		Author:      author,
+		Price:       float32(price),
+		Description: description,
+		ImagePath:   filePath,
+		Category:    category,
+		IsStock:     stock,
 	})
 
 	if err != nil {

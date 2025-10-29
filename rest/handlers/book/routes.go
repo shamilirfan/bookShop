@@ -17,4 +17,9 @@ func (h *Handler) RregisterRoutes(mux *http.ServeMux) {
 		middlewares.Use(http.HandlerFunc(h.UpdateBook)))
 	mux.Handle("DELETE /books/{id}",
 		middlewares.Use(http.HandlerFunc(h.DeleteBook)))
+
+	// Serve static uploads
+	mux.Handle("/uploads/",
+		http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))),
+	)
 }
