@@ -3,7 +3,7 @@ package book
 import "bookShop/repo/book"
 
 type Handler struct {
-	bookRepo book.BookRepo
+	bookRepo book.BookRepo 
 }
 
 func NewHandler(bookRepo book.BookRepo) *Handler {
