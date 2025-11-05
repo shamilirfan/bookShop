@@ -46,7 +46,7 @@ func (server *Server) Start() {
 	server.usersHandler.RegisterRoutes(mux)
 
 	// Listening server
-	fmt.Println("Server is running at http://localhost" + port)
+	fmt.Println("🚀 Server is running on http://localhost" + port)
 	err := http.ListenAndServe(port, mux)
 
 	// Handle Listening server error
