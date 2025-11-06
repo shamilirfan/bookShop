@@ -1,4 +1,4 @@
-select
+SELECT
     u.id,
     u.user_name,
     u.email,
@@ -7,9 +7,20 @@ select
     o.holding_number,
     o.area,
     o.thana,
-    o.district
-from
+    o.district,
+    b.title,
+    b.author,
+    b.description,
+    b.image_path,
+    b.category,
+    b.is_stock,
+    oi.quantity,
+    oi.unit_price,
+    oi.total_price
+FROM
     users u
-    join orders o on o.user_id = u.id
-order by
-    u.id
+    JOIN orders o ON o.user_id = u.id
+    JOIN order_items oi ON oi.order_id = o.id
+    JOIN books b ON b.id = oi.book_id
+ORDER BY
+    u.id;
