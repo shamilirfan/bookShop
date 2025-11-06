@@ -7,6 +7,8 @@ import (
 
 func (h *Handler) RregisterRoutes(mux *http.ServeMux) {
 	// Create route/endpoint
+	mux.Handle("GET /orders",
+		middlewares.Use(http.HandlerFunc(h.GetOrders)))
 	mux.Handle("POST /orders",
 		middlewares.Use(http.HandlerFunc(h.CreateOrder)))
 	mux.Handle("PUT /orders/{id}",

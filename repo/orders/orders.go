@@ -30,7 +30,7 @@ type OrderItem struct {
 }
 
 type OrderRepo interface {
-	GetOrders() ([]*Order, error)
+	Get() ([]*Order, error)
 	Create(order Order) (*Order, error)
 	Update(newOrder Order) (string, error)
 	Cancell(newOrder Order) (*Order, error)
