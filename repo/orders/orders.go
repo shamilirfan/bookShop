@@ -1,8 +1,9 @@
 package orders
 
 import (
-	"github.com/jmoiron/sqlx"
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type Order struct {
@@ -29,9 +30,9 @@ type OrderItem struct {
 }
 
 type OrderRepo interface {
-	GetOrders() ([]*Order,error)
+	GetOrders() ([]*Order, error)
 	Create(order Order) (*Order, error)
-	Update(newOrder Order) (*Order, error)
+	Update(newOrder Order) (string, error)
 	Cancell(newOrder Order) (*Order, error)
 	Delete(bookId int) error
 }
