@@ -10,18 +10,6 @@ import (
 	"strconv"
 )
 
-// Struct define
-type ReqCreateBook struct {
-	ID          int     `json:"id" db:"id"`
-	Title       string  `json:"title" db:"title"`
-	Author      string  `json:"author" db:"author"`
-	Price       float32 `json:"price" db:"price"`
-	Description string  `json:"description" db:"description"`
-	ImagePath   string  `json:"image_path" db:"image_path"`
-	Category    string  `json:"category" db:"category"`
-	IsStock     bool    `json:"is_stock" db:"is_stock"`
-}
-
 func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20) // 10 MB max
 	title := r.FormValue("title")

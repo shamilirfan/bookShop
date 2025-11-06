@@ -7,10 +7,11 @@ import (
 
 type Order struct {
 	ID            int         `json:"id" db:"id"`
-	CustomerID    int         `json:"customer_id" db:"customer_id"`
+	UserID        int         `json:"user_id" db:"user_id"`
 	RoadNumber    string      `json:"road_number" db:"road_number"`
 	HoldingNumber string      `json:"holding_number" db:"holding_number"`
 	Area          string      `json:"area" db:"area"`
+	Thana         string      `json:"thana" db:"thana"`
 	District      string      `json:"district" db:"district"`
 	PhoneNumber   string      `json:"phone_number" db:"phone_number"`
 	Status        string      `json:"status" db:"status"`
@@ -27,8 +28,8 @@ type OrderItem struct {
 	TotalPrice float64 `json:"total_price" db:"total_price"`
 }
 
-type OrdersRepo interface {
-	GetOrders() (*[]Order, error)
+type OrderRepo interface {
+	GetOrders() ([]*Order,error)
 	Create(order Order) (*Order, error)
 	Update(newOrder Order) (*Order, error)
 	Cancell(newOrder Order) (*Order, error)
@@ -37,4 +38,4 @@ type OrdersRepo interface {
 
 type orderRepo struct{ dbCon *sqlx.DB }
 
-func NewBookRepo(dbCon *sqlx.DB) OrdersRepo { return &orderRepo{dbCon: dbCon} }
+func NewOrderRepo(dbCon *sqlx.DB) OrderRepo { return &orderRepo{dbCon: dbCon} }

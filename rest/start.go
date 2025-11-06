@@ -3,6 +3,7 @@ package rest
 import (
 	"bookShop/config"
 	"bookShop/rest/handlers/book"
+	"bookShop/rest/handlers/orders"
 	"bookShop/rest/handlers/users"
 	"bookShop/rest/middlewares"
 	"fmt"
@@ -14,17 +15,20 @@ type Server struct {
 	config       *config.Configaration
 	bookHandler  *book.Handler
 	usersHandler *users.Handler
+	orderHandler *orders.Handler
 }
 
 func NewServer(
 	config *config.Configaration,
 	bookHandler *book.Handler,
 	usersHandler *users.Handler,
+	orderHandler *orders.Handler,
 ) *Server {
 	return &Server{
 		config:       config,
 		bookHandler:  bookHandler,
 		usersHandler: usersHandler,
+		orderHandler: orderHandler,
 	}
 }
 
@@ -44,6 +48,7 @@ func (server *Server) Start() {
 	// Call routes function and pass mux as a argument
 	server.bookHandler.RregisterRoutes(mux)
 	server.usersHandler.RegisterRoutes(mux)
+	server.orderHandler.RregisterRoutes(mux)
 
 	// Listening server
 	fmt.Println("🚀 Server is running on http://localhost" + port)
