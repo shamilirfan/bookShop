@@ -16,7 +16,8 @@ SELECT
     b.is_stock,
     oi.quantity,
     oi.unit_price,
-    oi.total_price
+    oi.total_price,
+    o.created_at
 FROM
     users u
     JOIN orders o ON o.user_id = u.id

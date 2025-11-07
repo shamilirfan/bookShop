@@ -1,5 +1,7 @@
 package orders
 
+import "time"
+
 func (r *orderRepo) Get() (interface{}, error) {
 	type Item struct {
 		BookID      int     `json:"book_id" db:"book_id"`
@@ -15,16 +17,17 @@ func (r *orderRepo) Get() (interface{}, error) {
 	}
 
 	type Order struct {
-		UserID        int    `json:"user_id" db:"user_id"`
-		UserName      string `json:"user_name" db:"user_name"`
-		Email         string `json:"email" db:"email"`
-		PhoneNumber   string `json:"phone_number" db:"phone_number"`
-		RoadNumber    string `json:"road_number" db:"road_number"`
-		HoldingNumber string `json:"holding_number" db:"holding_number"`
-		Area          string `json:"area" db:"area"`
-		Thana         string `json:"thana" db:"thana"`
-		District      string `json:"district" db:"district"`
-		Items         []Item `json:"items"`
+		UserID        int       `json:"user_id" db:"user_id"`
+		UserName      string    `json:"user_name" db:"user_name"`
+		Email         string    `json:"email" db:"email"`
+		PhoneNumber   string    `json:"phone_number" db:"phone_number"`
+		RoadNumber    string    `json:"road_number" db:"road_number"`
+		HoldingNumber string    `json:"holding_number" db:"holding_number"`
+		Area          string    `json:"area" db:"area"`
+		Thana         string    `json:"thana" db:"thana"`
+		District      string    `json:"district" db:"district"`
+		CreatedAt     time.Time `json:"created_at" db:"created_at"`
+		Items         []Item    `json:"items"`
 	}
 
 	// Marge 2 struct
@@ -54,7 +57,8 @@ func (r *orderRepo) Get() (interface{}, error) {
 	    b.is_stock,
 	    oi.quantity,
 	    oi.unit_price,
-	    oi.total_price
+	    oi.total_price,
+		o.created_at
 	FROM
 	    users u
 	    JOIN orders o ON o.user_id = u.id
@@ -82,6 +86,7 @@ func (r *orderRepo) Get() (interface{}, error) {
 				Area:          row.Area,
 				Thana:         row.Thana,
 				District:      row.District,
+				CreatedAt:     row.CreatedAt,
 				Items:         []Item{},
 			}
 		}
