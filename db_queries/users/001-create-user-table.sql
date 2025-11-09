@@ -3,5 +3,6 @@ CREATE TABLE
         id SERIAL PRIMARY KEY,
         user_name VARCHAR(100) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
-        password VARCHAR(200) NOT NULL
+        password TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW ()
     );
