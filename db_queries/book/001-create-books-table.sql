@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS books (
     author VARCHAR(100),
     price INTEGER NOT NULL CHECK (price >= 0),
     description TEXT,
+    image_path TEXT[] DEFAULT '{}',
     category VARCHAR(100) NOT NULL,
     brand VARCHAR(100),
-    is_stock BOOLEAN NOT NULL DEFAULT TRUE,
-    images_url TEXT[] DEFAULT '{}'
+    is_stock BOOLEAN NOT NULL DEFAULT TRUE
 );

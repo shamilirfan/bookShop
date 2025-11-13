@@ -15,6 +15,8 @@ import (
 )
 
 func Serve() {
+	// Config → DB → Repo → Handler → Server
+
 	config := config.GetConfig()
 	dbConfigaretion, err := db.NewConnection()
 	if err != nil {
@@ -28,7 +30,7 @@ func Serve() {
 
 	server := rest.NewServer(
 		config,
-		bookHandler.NewHandler(bookRepo),
+		bookHandler.NewHandler(bookRepo, config.Cloudinary),
 		users.NewHandler(usersRepo),
 		o.NewHandler(orderRepo),
 	)
