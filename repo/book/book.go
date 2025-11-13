@@ -18,7 +18,7 @@ type BookRepo interface {
 	Get() ([]*Book, error)
 	GetByID(bookID int) (*Book, error)
 	Create(newBook Book) (*Book, error)
-	//Update(updatedBook Book) (*Book, error)
+	Update(updatedBook Book) (*Book, error)
 	Delete(bookID int) error
 }
 

@@ -6,21 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
-
-// Helper function to extract Cloudinary PublicID
-func cloudinaryPublicID(imageURL string) string {
-	parts := strings.Split(imageURL, "/upload/")
-	if len(parts) < 2 {
-		return ""
-	}
-	publicPath := parts[1]
-	publicPath = strings.SplitN(publicPath, ".", 2)[0]
-	return publicPath
-}
 
 func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	// Path value
@@ -28,8 +16,8 @@ func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(bookID)
 
 	// Delete images from Cloudinary
-	var book book.Book
-	for _, imgURL := range book.ImagePath {
+	var booK book.Book
+	for _, imgURL := range booK.ImagePath {
 		publicID := cloudinaryPublicID(imgURL)
 		if publicID == "" {
 			fmt.Println("❌ Invalid Cloudinary URL:", imgURL)

@@ -1,102 +1,129 @@
 package book
 
-// import (
-// 	"bookShop/repo/book"
-// 	"bookShop/util"
-// 	"database/sql"
-// 	"io"
-// 	"net/http"
-// 	"os"
-// 	"path/filepath"
-// 	"strconv"
-// )
+import (
+	"bookShop/repo/book"
+	"bookShop/util"
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
 
-// func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
-// 	err1 := r.ParseMultipartForm(10 << 20)
-// 	bookID := r.PathValue("id")
-// 	id, err2 := strconv.Atoi(bookID)
-// 	title := r.FormValue("title")
-// 	author := r.FormValue("author")
-// 	priceStr := r.FormValue("price")
-// 	price, err3 := strconv.ParseFloat(priceStr, 64)
-// 	description := r.FormValue("description")
-// 	file, handler, err4 := r.FormFile("image_path")
-// 	category := r.FormValue("category")
-// 	isStockStr := r.FormValue("is_stock")
-// 	is_stock, err5 := strconv.ParseBool(isStockStr)
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+)
 
-// 	// ParseMultipartForm error handling
-// 	if err1 != nil {
-// 		util.SendError(w, "Failed to parse form", http.StatusBadRequest)
-// 		return
-// 	}
+// Helper function to extract Cloudinary PublicID
+func cloudinaryPublicID(imageURL string) string {
+	parts := strings.Split(imageURL, "/upload/")
+	if len(parts) < 2 {
+		return ""
+	}
+	publicPath := parts[1]
+	publicPath = strings.SplitN(publicPath, ".", 2)[0]
+	return publicPath
+}
 
-// 	// book ID error handling
-// 	if err2 != nil {
-// 		util.SendError(w, "Please give a valid book ID", http.StatusBadRequest)
-// 		return
-// 	}
+func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
+	err1 := r.ParseMultipartForm(50 << 20)
+	bookID := r.PathValue("id")
+	id, err2 := strconv.Atoi(bookID)
+	title := r.FormValue("title")
+	author := r.FormValue("author")
+	priceStr := r.FormValue("price")
+	price, err3 := strconv.ParseFloat(priceStr, 64)
+	description := r.FormValue("description")
+	category := r.FormValue("category")
+	brand := r.FormValue("brand")
+	isStockStr := r.FormValue("is_stock")
+	is_stock, err5 := strconv.ParseBool(isStockStr)
+	files := r.MultipartForm.File["image_path"]
 
-// 	// price error handling
-// 	if err3 != nil {
-// 		util.SendError(w, "Price must be a number", http.StatusBadRequest)
-// 		return
-// 	}
+	// ParseMultipartForm error handling
+	if err1 != nil {
+		util.SendError(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
 
-// 	// is_stock  error handling
-// 	if err5 != nil {
-// 		util.SendError(w, "isStock must be a boolean", http.StatusBadRequest)
-// 		return
-// 	}
+	// book ID error handling
+	if err2 != nil {
+		util.SendError(w, "Please give a valid book ID", http.StatusBadRequest)
+		return
+	}
 
-// 	// image_path  error handling
-// 	var filePath string
-// 	if err4 == nil {
-// 		defer file.Close()
+	// price error handling
+	if err3 != nil {
+		util.SendError(w, "Price must be a number", http.StatusBadRequest)
+		return
+	}
 
-// 		os.MkdirAll("uploads", os.ModePerm)
-// 		filePath = filepath.Join("uploads", handler.Filename)
-// 		filePath = filepath.ToSlash(filePath)
+	// is_stock  error handling
+	if err5 != nil {
+		util.SendError(w, "isStock must be a boolean", http.StatusBadRequest)
+		return
+	}
 
-// 		dst, err6 := os.Create(filePath)
-// 		if err6 != nil {
-// 			util.SendError(w, "Failed to save image", http.StatusInternalServerError)
-// 			return
-// 		}
-// 		defer dst.Close()
+	// files upload limitation
+	if len(files) > 4 {
+		http.Error(w, "Maximum 4 images allowed", http.StatusBadRequest)
+		return
+	}
 
-// 		_, err7 := io.Copy(dst, file)
-// 		if err7 != nil {
-// 			util.SendError(w, "Failed to copy image content", http.StatusInternalServerError)
-// 			return
-// 		}
+	// Delete old images from Cloudinary
+	var booK book.Book
+	for _, imgURL := range booK.ImagePath {
+		publicID := cloudinaryPublicID(imgURL)
+		if publicID == "" {
+			continue
+		}
+		_, err := h.cld.Upload.Destroy(r.Context(), uploader.DestroyParams{
+			PublicID: publicID,
+		})
+		if err != nil {
+			fmt.Println("Failed to delete old image:", imgURL, err)
+		} else {
+			fmt.Println("Deleted old image:", imgURL)
+		}
+	}
 
-// 	} else {
-// 		util.SendError(w, "Could not read the file", http.StatusBadRequest)
-// 		return
-// 	}
+	// Upload new images
+	var imageUrls []string
+	for _, fileHeader := range files {
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
 
-// 	// Update book
-// 	updatedBook, err8 := h.bookRepo.Update(book.Book{
-// 		ID:          id,
-// 		Title:       title,
-// 		Author:      author,
-// 		Price:       float32(price),
-// 		Description: description,
-// 		ImagePath:   filePath, // empty if no new image
-// 		Category:    category,
-// 		IsStock:     is_stock,
-// 	})
+		uploadResult, err := h.cld.Upload.Upload(r.Context(), file, uploader.UploadParams{
+			Folder: "books",
+		})
+		if err != nil {
+			http.Error(w, "Cloudinary upload failed", http.StatusInternalServerError)
+			return
+		}
 
-// 	if err8 != nil {
-// 		if err8 == sql.ErrNoRows {
-// 			util.SendError(w, "Book not found", http.StatusNotFound)
-// 			return
-// 		}
-// 		util.SendError(w, "Failed to update book", http.StatusInternalServerError)
-// 		return
-// 	}
+		imageUrls = append(imageUrls, uploadResult.SecureURL)
+	}
 
-// 	// Return updated book
-// 	util.SendData(w, updatedBook, http.StatusOK)
-// }
+	// Update book
+	b := book.Book{
+		ID:          id,
+		Title:       title,
+		Author:      author,
+		Price:       float32(price),
+		Description: description,
+		ImagePath:   imageUrls,
+		Category:    category,
+		Brand:       brand,
+		IsStock:     is_stock,
+	}
+	updatedBook, err8 := h.bookRepo.Update(b)
+
+	if err8 != nil {
+		util.SendError(w, "Failed to update book", http.StatusInternalServerError)
+		return
+	}
+
+	// Return updated book
+	util.SendData(w, updatedBook, http.StatusOK)
+}
