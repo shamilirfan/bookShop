@@ -1,6 +1,8 @@
 package book
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+)
 
 type Book struct {
 	ID          int      `json:"id" db:"id"`
@@ -8,7 +10,7 @@ type Book struct {
 	Author      string   `json:"author" db:"author"`
 	Price       float32  `json:"price" db:"price"`
 	Description string   `json:"description" db:"description"`
-	ImagePath   []string `json:"image_path" db:"image_path"`
+	ImagePath   []string `json:"image_path" db:"image_path"` // TEXT[] column
 	Category    string   `json:"category" db:"category"`
 	Brand       string   `json:"brand" db:"brand"`
 	IsStock     bool     `json:"is_stock" db:"is_stock"`
