@@ -1,25 +1,45 @@
 package book
 
 import (
-	"database/sql"
 	"log"
+
+	"github.com/lib/pq"
 )
 
 func (r *bookRepo) GetByID(bookID int) (*Book, error) {
 	var book Book
-	query := `
-		SELECT id, title, author, price, description, image_path, category, is_stock
+	query := `SELECT id, title, author, price, description, image_path, category, brand, is_stock
 		FROM books
 		WHERE id = $1
 	`
-
-	err := r.dbCon.Get(&book, query, bookID)
+	rows, err := r.dbCon.Query(query, bookID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	// Slice for results
+	for rows.Next() {
+		err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Author,
+			&book.Price,
+			&book.Description,
+			pq.Array(&book.ImagePath), // 👈 image array handle করার জন্য pq.Array()
+			&book.Category,
+			&book.Brand,
+			&book.IsStock,
+		)
+		if err != nil {
+			log.Fatal(err)
 		}
-		log.Printf("Error fetching book by ID %d: %v", bookID, err)
-		return nil, err
+	}
+
+	// Check for any errors from iteration
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return &book, nil
